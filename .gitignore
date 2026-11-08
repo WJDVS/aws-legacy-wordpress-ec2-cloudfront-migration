@@ -1,0 +1,20 @@
+# Terraform local files and state
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+
+# Environment variables and secrets
+.env
+*.pem
+*.key
+
+# Database dumps and archives
+*.sql
+*.sql.gz
+*.tar
+*.zip
+
+# WordPress uploads and local media content
+legacy-wordpress/wp-content/uploads/
