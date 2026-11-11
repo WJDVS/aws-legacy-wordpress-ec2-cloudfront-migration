@@ -1,3 +1,63 @@
 # Legacy WordPress Lift-and-Shift: Migrating a Dockerized Site to AWS EC2 with Terraform and CloudFront HTTPS
 
 A production-grade portfolio project demonstrating the migration of a legacy containerized WordPress application to AWS using infrastructure-as-code (Terraform), secure SSH configuration, an EC2 web/database host, and Amazon CloudFront for edge HTTPS termination.
+
+---
+
+## Target Architecture
+
+![Target Architecture Diagram](docs/architecture-diagram.png)
+
+- **Build Path:** Local laptop running VS Code & Terraform provisioning AWS resources (`terraform apply`) while pushing repository commits to GitHub.
+- **Data Path:** Local MySQL container running inside Docker migrated to EC2 via `mysqldump` -> `scp` -> MySQL import.
+- **Traffic Path:** End-user browser connects via HTTPS on port 443 to Amazon CloudFront, proxying origin HTTP traffic over port 80 to Apache/WordPress/MySQL hosted on an Ubuntu EC2 instance within the default VPC.
+
+---
+
+## Unified Naming & Tagging Convention
+
+All resources, components, and local configurations adhere strictly to the following project naming pattern:
+
+`legacy-wp-[environment]-[component]`
+
+- **AWS IAM Admin User:** `legacy-wp-dev-admin`
+- **AWS EC2 Instance:** `legacy-wp-dev-ec2`
+- **Security Group:** `legacy-wp-dev-sg` (SSH 22 restricted to administrative IP, HTTP 80)
+- **SSH Key Pair:** `legacy-wp-dev-keypair` (`~/.ssh/legacy-wp-dev-key`)
+- **CloudFront Distribution:** `legacy-wp-dev-cdn`
+- **S3 State Bucket:** `legacy-wp-dev-tfstate-[account-id]`
+- **Local Docker Containers:** `legacy-wp-local-wordpress`, `legacy-wp-local-mysql`
+- **Standard Resource Tags:** `Project=legacy-wp`, `Environment=dev`, `ManagedBy=terraform`
+
+---
+
+## Implementation Log
+
+### Phase 1: VS Code, Git & GitHub Setup
+- Initialized public repository `aws-legacy-wordpress-ec2-cloudfront-migration`.
+- Configured local WSL2 (Ubuntu) development environment on Windows 11 with VS Code and Git.
+- Created directory hierarchy separating Terraform bootstrap code (`terraform/bootstrap`), main application infrastructure (`terraform/legacy-wp`), application files (`legacy-wordpress`), migration scripts (`scripts`), and documentation assets (`docs/screenshots`).
+- Implemented a strict `.gitignore` policy to prevent tracking sensitive state artifacts (`.tfstate`), environment variables (`.env`), private key files (`*.pem`, `*.key`), database dumps (`*.sql`), and local media uploads (`wp-content/uploads/`).
+
+![Phase 1 Directory Structure](docs/screenshots/01-repo-directory-structure.png)
+
+---
+
+### Phase 2: Linux & AWS Foundations
+- Configured AWS CLI with an administrative IAM user (`legacy-wp-dev-admin`) in region `us-east-1` (strictly adhering to root account isolation guidelines).
+- Established an active AWS Budget ($5.00/month threshold) with email alerts to enforce financial governance and catch potential resource drift.
+- Generated a 4096-bit RSA SSH key pair (`~/.ssh/legacy-wp-dev-key`) within the native WSL2 Linux filesystem, applying strict POSIX permissions (`chmod 400`) required for cryptographic SSH access.
+
+![Phase 2 AWS Identity & Budget](docs/screenshots/02-aws-identity-and-budget.png)
+![Phase 2 SSH Key Permissions](docs/screenshots/02-ssh-key-permissions.png)
+
+---
+
+### Phase 3: Docker & Local Legacy WordPress Stack
+- Built a multi-container local stack in `legacy-wordpress/` using Docker Compose, pinning exact container image tags (`wordpress:6.4-apache` and `mysql:8.0`) to avoid environment drift and ensure reproducible local builds.
+- Enforced credential isolation by parameterizing container environment variables inside a `.env` file (excluded from version control) while committing a sanitized `.env.example` template for collaboration.
+- Launched the local stack (`legacy-wp-local-wordpress` and `legacy-wp-local-mysql`) on port 8000 (`http://localhost:8000`), completed initial site installation, and populated real blog content and image uploads to prepare for migration.
+
+![Phase 3 Docker Compose Specification](docs/screenshots/03-docker-compose-file.png)
+![Phase 3 Secret Isolation Verification](docs/screenshots/03-env-files-verification.png)
+![Phase 3 Local WordPress Running](docs/screenshots/03-local-wordpress-running.png)
