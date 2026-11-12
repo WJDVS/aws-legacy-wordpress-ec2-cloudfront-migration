@@ -61,3 +61,23 @@ All resources, components, and local configurations adhere strictly to the follo
 ![Phase 3 Docker Compose Specification](docs/screenshots/03-docker-compose-file.png)
 ![Phase 3 Secret Isolation Verification](docs/screenshots/03-env-files-verification.png)
 ![Phase 3 Local WordPress Running](docs/screenshots/03-local-wordpress-running.png)
+
+---
+
+### Phase 4: Terraform Foundations & Cloud Infrastructure (Step 1: State Bootstrap)
+- Provisioned a dedicated Amazon S3 remote state bucket (`legacy-wp-dev-tfstate-891612560987`) to decouple state storage from local developer machines.
+- Enabled S3 bucket versioning for state recovery and strict public access blocks for security compliance.
+
+![Phase 4 Terraform Bootstrap Success](docs/screenshots/04-terraform-bootstrap-success.png)
+- Configured the main Terraform module (`terraform/legacy-wp/`) with an S3 remote backend (`legacy-wp-dev-tfstate-891612560987`) and native state locking (`use_lockfile = true`).
+- Verified remote backend state initialization and provider constraints.
+
+![Phase 4 Terraform Backend Initialization](docs/screenshots/04-terraform-backend-init.png)
+- Defined Terraform security group (`legacy-wp-dev-sg`) allowing SSH (port 22) and HTTP (port 80) alongside unrestricted egress.
+- Configured AWS key pair resource (`legacy-wp-dev-keypair`) leveraging our local WSL2 public key (`~/.ssh/legacy-wp-dev-key.pub`).
+
+![Phase 4 Terraform Security & Keypair Code](docs/screenshots/04-terraform-security-code.png)
+- Provisioned infrastructure resources via Terraform: `aws_key_pair`, `aws_security_group` (`legacy-wp-dev-sg`), and an `aws_instance` (`legacy-wp-dev-ec2`) running Ubuntu 22.04 LTS on an encrypted 8GB gp3 root volume.
+- Verified successful cloud provisioning and captured public IP output.
+
+![Phase 4 Terraform Apply Success](docs/screenshots/04-terraform-apply-success.png)
