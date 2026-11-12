@@ -81,3 +81,18 @@ All resources, components, and local configurations adhere strictly to the follo
 - Verified successful cloud provisioning and captured public IP output.
 
 ![Phase 4 Terraform Apply Success](docs/screenshots/04-terraform-apply-success.png)
+
+---
+
+### Phase 5: Remote Server Configuration (Step 1: SSH Connectivity)
+- Enforced strict private key permissions (`chmod 400`) on the local WSL2 filesystem (`~/.ssh/legacy-wp-dev-key`).
+- Established secure remote administrative access over SSH to the Ubuntu 22.04 LTS EC2 instance (`3.208.23.126`).
+
+![Phase 5 SSH Connection Success](docs/screenshots/05-ssh-connection-success.png)
+
+### Phase 5: Remote Server Configuration (Step 2: Docker Runtime Setup)
+- Configured official Docker GPG keys and stable repositories on the Ubuntu 22.04 LTS remote host.
+- Installed Docker Engine, containerd, and the Docker Compose plugin, and granted user privileges to run container commands.
+- Verified runtime installation (`docker --version` and `docker compose version`).
+
+![Phase 5 Docker Installation Success](docs/screenshots/05-docker-install-success.png)
