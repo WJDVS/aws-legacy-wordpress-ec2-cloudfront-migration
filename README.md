@@ -96,3 +96,23 @@ All resources, components, and local configurations adhere strictly to the follo
 - Verified runtime installation (`docker --version` and `docker compose version`).
 
 ![Phase 5 Docker Installation Success](docs/screenshots/05-docker-install-success.png)
+
+---
+
+### Phase 6: Data Migration & Cloud Deployment (Step 1: Local Database Export)
+- Extracted a full database snapshot (`db_backup.sql`) from the local `legacy-wp-local-mysql` container using `mysqldump` with `--no-tablespaces`.
+- Verified export integrity, non-zero file size, and schema structure prior to cloud transfer.
+
+![Phase 6 Local Database Export](docs/screenshots/06-local-db-export.png)
+
+### Phase 6: Data Migration & Cloud Deployment (Step 2: Secure Data Transfer)
+- Securely transferred the local database backup (`db_backup.sql`) to the remote EC2 host using `scp`.
+- Verified file presence and integrity inside the remote `~/legacy-wordpress/` directory.
+
+![Phase 6 Secure Data Transfer](docs/screenshots/06-scp-db-transfer.png)
+
+### Phase 6: Data Migration & Cloud Deployment (Step 4: Live Application Verification)
+- Verified live HTTP accessibility of the migrated WordPress application via the EC2 instance (`http://localhost:8000`).
+- Confirmed database connectivity, asset loading, and successful container rehost migration.
+
+![Phase 6 Live Application Verification](docs/screenshots/06-live-app-verification.png)
