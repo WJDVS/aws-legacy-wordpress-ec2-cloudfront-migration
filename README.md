@@ -111,6 +111,13 @@ All resources, components, and local configurations adhere strictly to the follo
 
 ![Phase 6 Secure Data Transfer](docs/screenshots/06-scp-db-transfer.png)
 
+### Phase 6: Data Migration & Cloud Deployment (Step 3: Remote Stack Launch & DB Import)
+- Launched the containerized WordPress and MySQL stack on the remote EC2 host using `docker compose up -d`.
+- Imported the migrated SQL database snapshot (`db_backup.sql`) into the remote MySQL container.
+- Verified database table creation and container runtime health.
+
+![Phase 6 Remote Stack Launch and DB Import](docs/screenshots/06-remote-stack-launch-db-import.png)
+
 ### Phase 6: Data Migration & Cloud Deployment (Step 4: Live Application Verification)
 - Verified live HTTP accessibility of the migrated WordPress application via the EC2 instance (`http://localhost:8000`).
 - Confirmed database connectivity, asset loading, and successful container rehost migration.
