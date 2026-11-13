@@ -123,3 +123,28 @@ All resources, components, and local configurations adhere strictly to the follo
 - Confirmed database connectivity, asset loading, and successful container rehost migration.
 
 ![Phase 6 Live Application Verification](docs/screenshots/06-live-app-verification.png)
+
+---
+
+### Phase 7: Amazon CloudFront CDN & HTTPS Termination (Step 1: Provision CloudFront Distribution)
+- Provisioned Amazon CloudFront distribution (`legacy-wp-dev-cdn`) via Terraform configured with an EC2 public DNS origin (`ec2-3-208-23-126.compute-1.amazonaws.com`).
+- Configured viewer protocol policy to redirect HTTP to HTTPS and enabled global edge caching behaviors with full header/cookie forwarding.
+
+![Phase 7 CloudFront Provisioning Success](docs/screenshots/07-cloudfront-provision-success.png)
+
+### Phase 7: Amazon CloudFront CDN & HTTPS Termination (Step 2: Configure Cache Behaviors)
+- Configured ordered cache behaviors in Terraform to bypass edge caching for `/wp-admin/*` and `/wp-login.php`, ensuring authenticated session and backend form integrity.
+- Maintained standard default caching rules for static site assets while forcing secure HTTPS viewer protocol policies.
+
+![Phase 7 CloudFront Cache Behaviors](docs/screenshots/07-cloudfront-cache-behaviors.png)
+
+### Phase 7: Amazon CloudFront CDN & HTTPS Termination (Step 3: Update `wp-config.php`)
+- Injected `X-Forwarded-Proto` proxy header check into `wp-config.php` to correctly detect Edge HTTPS termination from CloudFront and prevent infinite redirect loops.
+- Explicitly defined `WP_HOME` and `WP_SITEURL` to `https://d1kmhrgpv50wj0.cloudfront.net` to ensure all core application links resolve through the CDN domain rather than the raw EC2 origin.
+
+![Phase 7 wp-config HTTPS Update](docs/screenshots/07-wp-config-https.png)
+
+### Phase 7: Amazon CloudFront CDN & HTTPS Termination (Step 4: End-to-End Verification)
+- Verified edge-to-origin connectivity and HTTPS redirection through CloudFront (`d1kmhrgpv50wj0.cloudfront.net`), ensuring secure content delivery without mixed-content errors or redirect loops.
+
+![Phase 7 CloudFront Verification](docs/screenshots/07-cloudfront-verification.png)
