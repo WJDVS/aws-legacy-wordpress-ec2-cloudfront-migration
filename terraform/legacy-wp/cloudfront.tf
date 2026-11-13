@@ -4,12 +4,12 @@ resource "aws_cloudfront_distribution" "cdn" {
   comment         = "Legacy WordPress CDN - legacy-wp-dev-cdn"
   price_class     = "PriceClass_100"
 
-origin {
+  origin {
     domain_name = "ec2-3-208-23-126.compute-1.amazonaws.com"
     origin_id   = "EC2Origin-legacy-wp-dev-ec2"
 
     custom_origin_config {
-      http_port              = 8000  # <--- Updated from 80 to 8000
+      http_port              = 8000 # <--- Updated from 80 to 8000
       https_port             = 443
       origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]

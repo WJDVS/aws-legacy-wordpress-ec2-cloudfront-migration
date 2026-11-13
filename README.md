@@ -148,3 +148,15 @@ All resources, components, and local configurations adhere strictly to the follo
 - Verified edge-to-origin connectivity and HTTPS redirection through CloudFront (`d1kmhrgpv50wj0.cloudfront.net`), ensuring secure content delivery without mixed-content errors or redirect loops.
 
 ![Phase 7 CloudFront Verification](docs/screenshots/07-cloudfront-verification.png)
+
+### Phase 8: Security Hardening & Automated Backups (Step 1: Lock Down EC2 Security Group to CloudFront)
+- Updated Terraform security group rules (`legacy-wp-dev-sg`) to remove open internet HTTP access (`0.0.0.0/0`), restricting inbound traffic on port `8000` exclusively to the AWS CloudFront Managed Prefix List (`pl-58a01131`).
+- Ensured all visitor traffic is forced through the CloudFront CDN edge while maintaining origin communication security.
+
+![Phase 8 Security Group Lockdown](docs/screenshots/08-security-group-lockdown.png)
+
+### Phase 8: Security Hardening & Automated Backups (Step 2: Transition from SSH to AWS SSM Session Manager)
+- Removed Port 22 (`SSH from Admin IP`) entirely from the EC2 security group (`legacy-wp-dev-sg`), eliminating open attack vectors and public administrative entry points.
+- Validated secure, audited remote management via AWS Systems Manager (SSM) Session Manager without requiring open inbound ports or persistent `.pem` private keys.
+
+![AWS SSM Session Manager Connection](docs/screenshots/08-ssm-session-connection.png)
