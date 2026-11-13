@@ -21,6 +21,15 @@ resource "aws_security_group" "wp_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Inbound HTTP for WordPress Docker container on port 8000
+  ingress {
+    description = "HTTP on port 8000 for Docker container"
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Outbound internet access for package updates and dependency downloads
   egress {
     description = "Allow all outbound traffic"
