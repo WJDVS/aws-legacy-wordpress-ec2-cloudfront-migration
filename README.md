@@ -184,3 +184,40 @@ All resources, components, and local configurations adhere strictly to the follo
 
 ![Disaster Recovery Backup Restore Test Success](docs/screenshots/08-backup-restore-test-success.png)
 ![Post-Test Cleanup and Resource Verification](docs/screenshots/08-resource-recovery-and-cleanup.png)
+
+---
+
+---
+
+### Phase 9: Architectural Trade-offs & Future Evolution
+
+#### Step 1: Architectural Comparison (Rehost vs. Refactor)
+- **Current Rehost (Lift-and-Shift):** Migrated our containerized WordPress application to a single AWS EC2 instance using Terraform, CloudFront HTTPS termination, and automated S3 backups.
+  - *Pros:* Rapid deployment timeline, guaranteed runtime consistency via Docker, and low baseline cost for single-server workloads.
+  - *Cons:* Single Point of Failure (SPOF) and manual vertical scaling requirements.
+- **Cloud-Native Refactor (Target Architecture):** Re-architecting the application into decoupled, managed cloud services (ECS/Fargate, RDS Multi-AZ, EFS, and ElastiCache).
+  - *Pros:* High availability, multi-AZ fault tolerance, and elastic horizontal scaling.
+  - *Cons:* Significantly higher architectural complexity, steeper learning curve, and increased baseline AWS costs.
+
+#### Step 2: Next-Gen Target Architecture Blueprint (High Availability)
+To evolve this project into an enterprise-grade production environment, we designed a fault-tolerant multi-AZ cloud blueprint:
+
+```text
+[ Route 53 (DNS) ] 
+       │
+       ▼
+[ Amazon CloudFront (CDN & Edge Caching) ]
+       │
+       ▼
+[ Application Load Balancer (ALB) (Multi-AZ Public Subnets) ]
+       │
+       ├──► [ Amazon ECS / Fargate Cluster (Private Subnets - Auto Scaling) ]
+       │           │
+       │           ├──► WordPress Container 1 (Read/Write)
+       │           └──► WordPress Container 2 (Read/Write)
+       │
+       ├──► [ Amazon EFS (Elastic File System) ] (Shared wp-content/uploads)
+       │
+       ├──► [ Amazon RDS MySQL (Multi-AZ Managed Database) ] (Primary + Standby)
+       │
+       └──► [ Amazon ElastiCache (Redis) ] (Object Caching & Session Store)
