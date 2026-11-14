@@ -173,3 +173,10 @@ All resources, components, and local configurations adhere strictly to the follo
 - Validated scheduled task execution via cron log inspection (`/var/log/legacy-wp-backup.log`), confirming seamless container-aware database dumps and S3 uploads.
 
 ![Cron Automation Success Verification](docs/screenshots/08-backup-cron-success.png)
+
+### Phase 8: Security Hardening & Automated Backups (Step 4: Disaster Recovery Restore Test)
+- Downloaded the latest encrypted database backup archive from the S3 bucket (`legacy-wp-dev-backups-891612560987`) into an isolated test environment.
+- Provisioned a low-memory MySQL recovery container (`legacy-wp-restore-test`) optimized with `performance-schema=OFF` and a `64M` InnoDB buffer pool.
+- Successfully restored and verified the database dump, confirming complete WordPress schema integrity (12 tables, 9 posts/revisions, and active `admin` user account preservation).
+
+![Disaster Recovery Backup Restore Test Success](docs/screenshots/08-backup-restore-test-success.png)
