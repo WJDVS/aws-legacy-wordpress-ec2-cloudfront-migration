@@ -167,3 +167,9 @@ All resources, components, and local configurations adhere strictly to the follo
 - Verified secure data transfer and storage within the encrypted S3 backup bucket (`legacy-wp-dev-backups-891612560987`).
 
 ![Database Backup Success S3 Upload](docs/screenshots/08-database-backup-success.png)
+
+### Phase 8: Security Hardening & Automated Backups (Step 4: Cron Automation & Log Verification)
+- Configured automated daily backup execution via root cron (`2 3 * * * /usr/local/bin/legacy-wp-backup.sh`), ensuring hands-free execution and reliable rotation.
+- Validated scheduled task execution via cron log inspection (`/var/log/legacy-wp-backup.log`), confirming seamless container-aware database dumps and S3 uploads.
+
+![Cron Automation Success Verification](docs/screenshots/08-backup-cron-success.png)
