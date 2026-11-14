@@ -149,41 +149,36 @@ All resources, components, and local configurations adhere strictly to the follo
 
 ![Phase 7 CloudFront Verification](docs/screenshots/07-cloudfront-verification.png)
 
-### Phase 8: Security Hardening & Automated Backups (Step 1: Lock Down EC2 Security Group to CloudFront)
+### Phase 8: Security Hardening, Automated Backups & Disaster Recovery
+
+#### Step 1: Lock Down EC2 Security Group to CloudFront
 - Updated Terraform security group rules (`legacy-wp-dev-sg`) to remove open internet HTTP access (`0.0.0.0/0`), restricting inbound traffic on port `8000` exclusively to the AWS CloudFront Managed Prefix List (`pl-58a01131`).
-- Ensured all visitor traffic is forced through the CloudFront CDN edge while maintaining origin communication security.
+- Enforced that all incoming web traffic must pass through the CloudFront edge rather than hitting the origin directly.
 
 ![Phase 8 Security Group Lockdown](docs/screenshots/08-security-group-lockdown.png)
 
-### Phase 8: Security Hardening & Automated Backups (Step 2: Transition from SSH to AWS SSM Session Manager)
-- Removed Port 22 (`SSH from Admin IP`) entirely from the EC2 security group (`legacy-wp-dev-sg`), eliminating open attack vectors and public administrative entry points.
-- Validated secure, audited remote management via AWS Systems Manager (SSM) Session Manager without requiring open inbound ports or persistent `.pem` private keys.
+#### Step 2: Transition from SSH to AWS SSM Session Manager
+- Removed Port 22 (`SSH from Admin IP`) entirely from the EC2 security group, eliminating public attack vectors and static private key management.
+- Validated secure, audited remote management via AWS Systems Manager (SSM) Session Manager over internal AWS APIs.
 
 ![AWS SSM Session Manager Connection](docs/screenshots/08-ssm-session-connection.png)
 
-### Phase 8: Security Hardening & Automated Backups (Step 3: Automated Container-Aware Database Backups to Encrypted S3)
-- Created a robust backup script (`/opt/wordpress/backup.sh`) executing container-aware database dumps (`mysqldump`) for MySQL (`legacy-wp-local-mysql`) and archiving WordPress user content (`wp-content`), compressing them into secure tarballs.
-- Configured automated daily backup execution via a root cron schedule running at 02:00 UTC, outputting to a managed log file.
-- Verified secure data transfer and storage within the encrypted S3 backup bucket (`legacy-wp-dev-backups-891612560987`).
+#### Step 3: Container-Aware Backup Script & Encrypted S3 Integration
+- Developed a automated backup script (`/usr/local/bin/legacy-wp-backup.sh`) that executes container-aware database dumps (`mysqldump`) for MySQL (`legacy-wp-local-mysql`) and compresses WordPress user content (`wp-content`) into secure tarballs.
+- Configured secure synchronization to an encrypted AWS S3 backup bucket (`legacy-wp-dev-backups-891612560987`).
 
 ![Database Backup Success S3 Upload](docs/screenshots/08-database-backup-success.png)
 
-### Phase 8: Security Hardening & Automated Backups (Step 4: Cron Automation & Log Verification)
-- Configured automated daily backup execution via root cron (`2 3 * * * /usr/local/bin/legacy-wp-backup.sh`), ensuring hands-free execution and reliable rotation.
-- Validated scheduled task execution via cron log inspection (`/var/log/legacy-wp-backup.log`), confirming seamless container-aware database dumps and S3 uploads.
+#### Step 4: Cron Automation & Log Verification
+- Configured automated daily backup execution via root cron (`2 3 * * * /usr/local/bin/legacy-wp-backup.sh`), ensuring hands-free, reliable operational rotation.
+- Inspected scheduled task logs (`/var/log/legacy-wp-backup.log`) to verify execution success and error handling.
 
 ![Cron Automation Success Verification](docs/screenshots/08-backup-cron-success.png)
 
-### Phase 8: Security Hardening & Automated Backups (Step 4: Disaster Recovery Restore Test)
-- Downloaded the latest encrypted database backup archive from the S3 bucket (`legacy-wp-dev-backups-891612560987`) into an isolated test environment.
-- Provisioned a low-memory MySQL recovery container (`legacy-wp-restore-test`) optimized with `performance-schema=OFF` and a `64M` InnoDB buffer pool.
-- Successfully restored and verified the database dump, confirming complete WordPress schema integrity (12 tables, 9 posts/revisions, and active `admin` user account preservation).
+#### Step 5: Disaster Recovery Restore Test & Resource Verification
+- Downloaded the latest encrypted backup archive from S3 into an isolated test environment and provisioned a low-memory MySQL recovery container (`legacy-wp-restore-test`) optimized with `performance-schema=OFF` and a `64M` buffer pool.
+- Successfully verified complete WordPress schema integrity (12 tables, 9 posts/revisions, and active `admin` user account preservation).
+- **Cleanup & Resource Hygiene:** Removed temporary test containers, cleared staging files from `/tmp`, verified via `docker ps` that only primary production containers remain active, and confirmed system memory recovery via `free -h` (restoring available RAM to `496 MiB` alongside normal swap utilization)[cite: 3, 4].
 
 ![Disaster Recovery Backup Restore Test Success](docs/screenshots/08-backup-restore-test-success.png)
-
-#### Cleanup & Resource Verification
-- Removed the temporary disaster recovery test container (`legacy-wp-restore-test`) and deleted the staged backup archive from `/tmp`[cite: 3, 4].
-- Verified via `docker ps` that only the two primary production containers (`legacy-wp-local-wordpress` and `legacy-wp-local-mysql`) remain active and healthy[cite: 3, 4].
-- Confirmed system memory recovery via `free -h`, showing available RAM restored to `496 MiB` alongside normal swap utilization (`392 MiB`)[cite: 3, 4].
-
 ![Post-Test Cleanup and Resource Verification](docs/screenshots/08-resource-recovery-and-cleanup.png)
