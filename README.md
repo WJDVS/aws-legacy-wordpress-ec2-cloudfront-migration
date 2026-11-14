@@ -160,3 +160,10 @@ All resources, components, and local configurations adhere strictly to the follo
 - Validated secure, audited remote management via AWS Systems Manager (SSM) Session Manager without requiring open inbound ports or persistent `.pem` private keys.
 
 ![AWS SSM Session Manager Connection](docs/screenshots/08-ssm-session-connection.png)
+
+### Phase 8: Security Hardening & Automated Backups (Step 3: Automated Container-Aware Database Backups to Encrypted S3)
+- Created a robust backup script (`/opt/wordpress/backup.sh`) executing container-aware database dumps (`mysqldump`) for MySQL (`legacy-wp-local-mysql`) and archiving WordPress user content (`wp-content`), compressing them into secure tarballs.
+- Configured automated daily backup execution via a root cron schedule running at 02:00 UTC, outputting to a managed log file.
+- Verified secure data transfer and storage within the encrypted S3 backup bucket (`legacy-wp-dev-backups-891612560987`).
+
+![Database Backup Success S3 Upload](docs/screenshots/08-database-backup-success.png)
