@@ -180,3 +180,10 @@ All resources, components, and local configurations adhere strictly to the follo
 - Successfully restored and verified the database dump, confirming complete WordPress schema integrity (12 tables, 9 posts/revisions, and active `admin` user account preservation).
 
 ![Disaster Recovery Backup Restore Test Success](docs/screenshots/08-backup-restore-test-success.png)
+
+#### Cleanup & Resource Verification
+- Removed the temporary disaster recovery test container (`legacy-wp-restore-test`) and deleted the staged backup archive from `/tmp`[cite: 3, 4].
+- Verified via `docker ps` that only the two primary production containers (`legacy-wp-local-wordpress` and `legacy-wp-local-mysql`) remain active and healthy[cite: 3, 4].
+- Confirmed system memory recovery via `free -h`, showing available RAM restored to `496 MiB` alongside normal swap utilization (`392 MiB`)[cite: 3, 4].
+
+![Post-Test Cleanup and Resource Verification](docs/screenshots/08-resource-recovery-and-cleanup.png)
