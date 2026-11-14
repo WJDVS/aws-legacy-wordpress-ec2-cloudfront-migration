@@ -149,6 +149,8 @@ All resources, components, and local configurations adhere strictly to the follo
 
 ![Phase 7 CloudFront Verification](docs/screenshots/07-cloudfront-verification.png)
 
+---
+
 ### Phase 8: Security Hardening, Automated Backups & Disaster Recovery
 
 #### Step 1: Lock Down EC2 Security Group to CloudFront
